@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: factory-service
+  namespace: app
+spec:
+  selector:
+    app: factory
+  ports:
+    - port: 80
+      targetPort: 8082
+      nodePort: 30082
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: factory
+  namespace: app
+  labels:
+    app: factory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: factory
+  template:
+    metadata:
+      labels:
+        app: factory
+    spec:
+      containers:
+        - name: factory
+          image: yooase12/simpleapp:factory
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - secretRef:
+                name: db-secret
+            - configMapRef:
+                name: webclient-config
