@@ -18,7 +18,7 @@ class OriginRepository(
         originInfo.computeIfAbsent(id) {
             storageWebclient.getOriginData(id)
                 .map { origin -> origin.price }
-                .switchIfEmpty(Mono.error(IllegalArgumentException("Failed to retrieve origin price for id: $id")))
+                .switchIfEmpty(Mono.error(IllegalArgumentException("origin is not existed")))
         }
 
 }
