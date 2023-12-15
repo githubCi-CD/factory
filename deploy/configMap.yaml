@@ -5,3 +5,5 @@ metadata:
   name: webclient-config
 data:
   storage.url: "http://app-service/api/v1"
+  spring.kafka.topic: "storage"
+  spring.kafka.bootstrap-servers: "kafka-service:9092"

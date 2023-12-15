@@ -56,7 +56,7 @@ class FactoryHandler(
                                         ).flatMap { savedFactory ->
                                             kafkaProducer.sendMessage<Factory>(
                                                 topic,
-                                                StorageDto(factoryId = savedFactory.id ?: 0, originId = modifiedOriginDto.id, count = modifiedOriginDto.count * -1),
+                                                StorageDto(factoryId = savedFactory.id ?: 0, originId = modifiedOriginDto.id, count = modifiedOriginDto.count),
                                                 savedFactory
                                             ).toMono()
                                         }
