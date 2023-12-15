@@ -13,7 +13,7 @@ class CorsConfig: WebFluxConfigurer {
     override fun addCorsMappings(corsRegistry: CorsRegistry) {
         corsRegistry.addMapping("/**")
             .allowedOrigins("*")
-            .allowedMethods("GET", "POST", "PUT", "FETCH", "DELETE")
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
             .allowedHeaders("*")
     }
 
