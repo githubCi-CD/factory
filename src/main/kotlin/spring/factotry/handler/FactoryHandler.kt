@@ -43,28 +43,34 @@ class FactoryHandler(
                 val asset = factory.asset
                 serverRequest.bodyToMono(OriginDto::class.java)
                     .flatMap { originDto ->
-                        originRepository.getOriginPrice(originDto.id ?: throw IllegalArgumentException("origin id is null"))
+                        originRepository.getOriginPrice(
+                            originDto.id ?: throw IllegalArgumentException("origin id is null")
+                        )
                             .flatMap {
                                 val modifiedOriginDto = originDto.copy(
                                     price = it
                                 )
-                                    if (modifiedOriginDto.isBuyOrigin(asset)) {
-                                        val paidMoney = modifiedOriginDto.getTotalPrice()
-                                        factoryRepository.save(
-                                            factory.copy(
-                                                asset = factory.asset - paidMoney,
-                                                outcome = factory.outcome + paidMoney
-                                            )
-                                        ).flatMap { savedFactory ->
-                                            kafkaProducer.sendMessage<Factory>(
-                                                topic,
-                                                StorageDto(factoryId = savedFactory.id ?: 0, originId = modifiedOriginDto.id, count = modifiedOriginDto.count),
-                                                savedFactory
-                                            ).toMono()
-                                        }
-                                    } else {
-                                        Mono.error(IllegalArgumentException("asset is overloaded"))
+                                if (modifiedOriginDto.isBuyOrigin(asset)) {
+                                    val paidMoney = modifiedOriginDto.getTotalPrice()
+                                    factoryRepository.save(
+                                        factory.copy(
+                                            asset = factory.asset - paidMoney,
+                                            outcome = factory.outcome + paidMoney
+                                        )
+                                    ).flatMap { savedFactory ->
+                                        kafkaProducer.sendMessage<Factory>(
+                                            topic,
+                                            StorageDto(
+                                                factoryId = savedFactory.id ?: 0,
+                                                originId = modifiedOriginDto.id,
+                                                count = modifiedOriginDto.count
+                                            ),
+                                            savedFactory
+                                        ).toMono()
                                     }
+                                } else {
+                                    Mono.error(IllegalArgumentException("asset is overloaded"))
+                                }
                             }.flatMap { result ->
                                 ServerResponse.ok().body(result.toMono(), Factory::class.java)
                             }
@@ -73,6 +79,42 @@ class FactoryHandler(
                     }
             }
 
+    @Transactional
+    fun useOrigin(serverRequest: ServerRequest): Mono<ServerResponse> =
+        factoryRepository.findById(serverRequest.pathVariable("id").toLong())
+            .flatMap { factory ->
+                serverRequest.bodyToMono(OriginDto::class.java)
+                    .flatMap { originDto ->
+                        kafkaProducer.sendMessage<Factory>(
+                            topic,
+                            StorageDto(
+                                factoryId = factory.id ?: 0,
+                                originId = originDto.id,
+                                count = originDto.count * -1
+                            ),
+                            factory
+                        ).toMono()
+                    }
+            }.flatMap { result ->
+                ServerResponse.ok().body(result.toMono(), Factory::class.java)
+            }.onErrorResume { error ->
+                ServerResponse.badRequest().bodyValue("Error: ${error.message}")
+            }
+
+    fun success(serverRequest: ServerRequest): Mono<ServerResponse> =
+        ServerResponse.ok()
+            .body(
+                factoryRepository.updateFactorySuccessById(serverRequest.pathVariable("id").toLong()),
+                Factory::class.java
+            )
+
+    fun failure(serverRequest: ServerRequest): Mono<ServerResponse> =
+        ServerResponse.ok()
+            .body(
+                factoryRepository.updateFactoryFailureById(serverRequest.pathVariable("id").toLong()),
+                Factory::class.java
+            )
+
     fun login(serverRequest: ServerRequest): Mono<ServerResponse> =
         serverRequest.bodyToMono(LoginDto::class.java)
             .flatMap { loginDto ->
@@ -80,11 +122,11 @@ class FactoryHandler(
                     .switchIfEmpty(
                         factoryRepository.save(loginDto.to())
                             .flatMap { savedFatory ->
-                                    kafkaProducer.sendMessage<Factory>(
-                                        topic,
-                                        StorageDto(factoryId = savedFatory.id ?: 0, count = 5000),
-                                        savedFatory
-                                    ).toMono()
+                                kafkaProducer.sendMessage<Factory>(
+                                    topic,
+                                    StorageDto(factoryId = savedFatory.id ?: 0, count = 5000),
+                                    savedFatory
+                                ).toMono()
                             }
                     )
                     .flatMap { factory ->

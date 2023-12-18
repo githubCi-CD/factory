@@ -20,6 +20,9 @@ class FactoryRouter(
             GET("", factoryHandler::findAll)
             GET("/{id}", factoryHandler::findById)
             POST("/{id}/buyOrigin", factoryHandler::buyOrigin)
+            POST("/{id}/useOrigin", factoryHandler::useOrigin)
+            GET("/{id}/success", factoryHandler::success)
+            GET("/{id}/failure", factoryHandler::failure)
         }
 
         "/login".nest {

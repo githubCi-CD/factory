@@ -66,6 +66,66 @@ paths:
           content:
             text/plain:
               example: 'Error: {error message}'
+  /api/v1/factory/{id}/useOrigin:
+    post:
+      summary: Use an origin for a factory
+      tags:
+        - Factory
+      parameters:
+        - name: id
+          in: path
+          description: ID of the factory to buy an origin for
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OriginDto'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Factory'
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              example: 'Error: {error message}'
+  /api/v1/factory/{id}/success:
+    get:
+      summary: Use an origin for a factory
+      tags:
+        - Factory
+      parameters:
+        - name: id
+          in: path
+          description: ID of the factory to buy an origin for
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+  /api/v1/factory/{id}/failure:
+    get:
+      summary: Use an origin for a factory
+      tags:
+        - Factory
+      parameters:
+        - name: id
+          in: path
+          description: ID of the factory to buy an origin for
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
   /login:
     post:
       summary: Login and retrieve user information

@@ -19,4 +19,22 @@ interface FactoryRepository: ReactiveCrudRepository<Factory, Long> {
         """
     )
     fun updateFactoryStatusById(id: Long?): Mono<Factory>
+
+    @Query(
+        """
+            UPDATE factory
+            SET success_count = success_count + 1
+            where id = :id
+        """
+    )
+    fun updateFactorySuccessById(id: Long?): Mono<Factory>
+
+    @Query(
+        """
+            UPDATE factory
+            SET failure_count = failure_count + 1
+            where id = :id
+        """
+    )
+    fun updateFactoryFailureById(id: Long?): Mono<Factory>
 }
