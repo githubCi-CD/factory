@@ -12,5 +12,5 @@ COPY --from=build /app/deploy/pinpoint /app/pinpoint
 
 EXPOSE 8082
 
-ENTRYPOINT ["java", "-javaagent:/app/pinpoint/pinpoint-bootstrap-2.5.3.jar", "-Dpinpoint.agentId=factory", "-Dpinpoint.applicationName=factory", "-Dpinpoint.config=/app/pinpoint/pinpoint-root.config" ,"-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
 

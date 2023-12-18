@@ -1,5 +1,10 @@
 package spring.factotry.router
 
+import brave.Tracing
+import io.micrometer.context.ContextSnapshot
+import io.micrometer.tracing.Tracer
+import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.router
@@ -9,7 +14,6 @@ import spring.factotry.handler.FactoryHandler
 class FactoryRouter(
     private val factoryHandler: FactoryHandler
 ) {
-
     @Bean
     fun factorySpecRouter() = router {
         "/api/v1/factory".nest {

@@ -28,9 +28,17 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("io.asyncer:r2dbc-mysql")
+    runtimeOnly("io.asyncer:r2dbc-mysql:1.0.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+
+    // sleuth + zipkin + Netty Reactor내 Tracing을 위한 라이브러리
+    implementation ("io.micrometer:micrometer-tracing-bridge-brave")
+    implementation ("io.zipkin.reporter2:zipkin-reporter-brave")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    // R2DBC micrometer auto tracing
+    implementation("org.springframework.experimental:r2dbc-micrometer-spring-boot:1.0.2")
 
     //kafka
     implementation("org.springframework.kafka:spring-kafka")

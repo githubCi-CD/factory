@@ -1,14 +1,14 @@
 package spring.factotry.handler
 
+import io.micrometer.tracing.Span
+import io.micrometer.tracing.Tracer
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toMono
 import spring.factotry.dto.LoginDto
 import spring.factotry.dto.OriginDto
@@ -27,8 +27,10 @@ class FactoryHandler(
     private val topic: String
 ) {
 
+    private val log = LoggerFactory.getLogger(FactoryHandler::class.java)
     fun findAll(serverRequest: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok().body(factoryRepository.findAll(), Factory::class.java)
+            .doOnNext { log.info("factory find all") }
 
     fun findById(serverRequest: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok()

@@ -3,10 +3,23 @@ server:
   servlet:
     context-path: /
 
+
 logging:
   level:
-    io:
-      r2dbc: DEBUG
+    io.micrometer: debug
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+    propagation:
+      type: b3
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:30411/api/v2/spans"
 
 spring:
   kafka:
@@ -22,6 +35,10 @@ spring:
       max-size: 10
       initial-size: 5
     password: root
+  application:
+    name: "factory"
+  main:
+    web-application-type: reactive
 
 springdoc:
   api-docs:

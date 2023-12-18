@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: factory
-          image: yooase12/simpleapp:factory
+          image: yooase12/kafka-project:factory
           ports:
             - containerPort: 8082
           envFrom:
