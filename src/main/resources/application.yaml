@@ -7,6 +7,8 @@ server:
 logging:
   level:
     io.micrometer: debug
+    brave: debug
+    org.springframework.boot.actuate: debug
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
