@@ -25,11 +25,13 @@ management:
 
 spring:
   kafka:
-    topic: test
+    topic: newStorage
     bootstrap-servers: localhost:29092 #서버
     producer: #카프카로 보낼때 직렬화 하는 방법.
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        partitioner.class: org.apache.kafka.clients.producer.RoundRobinPartitioner
   r2dbc:
     url: r2dbc:mysql://localhost:3306/tb01
     username: root

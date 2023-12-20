@@ -7,4 +7,4 @@ data:
   storage.url: "http://storage-service/api/v1"
   spring.kafka.topic: "storage"
   spring.kafka.bootstrap-servers: "kafka-service:9092"
-  management.zipkin.tracing.endpoint: "zipkin-svc.zipkin.svc:30411/api/v2/spans"
+  management.zipkin.tracing.endpoint: "http://zipkin-svc.zipkin.svc:9411/api/v2/spans"

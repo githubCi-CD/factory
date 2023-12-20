@@ -23,7 +23,7 @@ interface FactoryRepository: ReactiveCrudRepository<Factory, Long> {
     @Query(
         """
             UPDATE factory
-            SET success_count = success_count + 1
+            SET success_count = success_count + 1, asset = asset + 3000, income = income + 3000
             where id = :id
         """
     )

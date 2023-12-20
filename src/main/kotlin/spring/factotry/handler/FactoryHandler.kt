@@ -119,6 +119,9 @@ class FactoryHandler(
         serverRequest.bodyToMono(LoginDto::class.java)
             .flatMap { loginDto ->
                 factoryRepository.findFactoryByName(loginDto.name)
+                    .flatMap {
+                        factoryRepository.save(it.copy(status = true))
+                    }
                     .switchIfEmpty(
                         factoryRepository.save(loginDto.to())
                             .flatMap { savedFatory ->
@@ -139,7 +142,7 @@ class FactoryHandler(
             .flatMap { loginDto ->
                 factoryRepository.findFactoryByName(loginDto.name)
                     .flatMap { factory ->
-                        ServerResponse.ok().bodyValue(factoryRepository.updateFactoryStatusById(factory.id))
+                        ServerResponse.ok().body(factoryRepository.updateFactoryStatusById(factory.id).toMono(), LoginDto::class.java)
                     }
             }
 }
